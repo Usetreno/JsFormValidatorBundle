@@ -570,14 +570,32 @@ var FpJsFormValidator = new function () {
     this.getElementValue = function (element) {
         var i = element.transformers.length;
         var value = this.getInputValue(element);
+        var childName;
 
         if (i && undefined === value) {
             value = this.getMappedValue(element);
+
         } else if (elementIsType(element, 'collection')) {
             value = {};
-            for (var childName in element.children) {
+            for (childName in element.children) {
                 value[childName] = this.getMappedValue(element.children[childName]);
             }
+
+        } else if (elementIsType(element, 'choice') && element.data.form) {
+            if (element.multiple) {
+                value = {};
+                for (childName in element.children) {
+                    value[childName] = this.getMappedValue(element.children[childName]);
+                }
+            } else {
+                for (childName in element.children) {
+                    if (element.children[childName].domNode.checked) {
+                        value = this.getMappedValue(element.children[childName]);
+                        break;
+                    }
+                }
+            }
+
         } else {
             value = this.getSpecifiedElementTypeValue(element);
         }
@@ -621,7 +639,12 @@ var FpJsFormValidator = new function () {
             var len = field.length;
             while (len--) {
                 if (field.options[len].selected) {
-                    value.push(field.options[len].value);
+                    if (element.multiple) {
+                        value.push(field.options[len].value);
+                    } else {
+                        value = field.options[len].value;
+                        break;
+                    }
                 }
             }
         } else {
