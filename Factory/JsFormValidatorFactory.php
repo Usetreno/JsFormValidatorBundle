@@ -252,6 +252,7 @@ class JsFormValidatorFactory
         $model->transformers   = $this->parseTransformers($form->getConfig()->getViewTransformers());
         $model->cascade        = $conf->getOption('cascade_validation');
         $model->bubbling       = $conf->getOption('error_bubbling');
+        $model->multiple       = $conf->getOption('multiple');
         $model->data           = $this->getValidationData($form);
         $model->children       = $this->processChildren($form);
 
