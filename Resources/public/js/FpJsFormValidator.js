@@ -576,14 +576,23 @@ var FpJsFormValidator = new function () {
     this.getElementValue = function (element) {
         var i = element.transformers.length;
         var value = this.getInputValue(element);
+        var childName;
 
         if (i && undefined === value) {
             value = this.getMappedValue(element);
+            
         } else if (elementIsType(element, 'collection')) {
             value = {};
             for (var childName in element.children) {
                 value[childName] = this.getMappedValue(element.children[childName]);
             }
+
+        } else if (Object.keys(element.children).length > 0) {
+            value = {};
+            for (childName in element.children) {
+                value[childName] = this.getMappedValue(element.children[childName]);
+            }
+
         } else {
             value = this.getSpecifiedElementTypeValue(element);
         }
