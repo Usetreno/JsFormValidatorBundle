@@ -602,6 +602,12 @@ var FpJsFormValidator = new function () {
                 }
             }
 
+        } else if (Object.keys(element.children).length > 0) {
+            value = {};
+            for (childName in element.children) {
+                value[childName] = this.getMappedValue(element.children[childName]);
+            }
+
         } else {
             value = this.getSpecifiedElementTypeValue(element);
         }
