@@ -334,10 +334,8 @@ function FpJsCustomizeMethods() {
         //noinspection JSCheckFunctionSignatures
         FpJsFormValidator.each(this, function (item) {
             var element = item.jsFormValidator;
-            if (event) {
-                event.preventDefault();
-            }
             element.validateRecursively();
+
             if (FpJsFormValidator.ajax.queue) {
                 if (event) {
                     event.preventDefault();
@@ -348,10 +346,30 @@ function FpJsCustomizeMethods() {
                         element.submitForm.apply(item, [item]);
                     }
                 });
+
             } else {
                 element.onValidate.apply(element.domNode, [FpJsFormValidator.getAllErrors(element, {}), event]);
-                if (element.isValid()) {
-                    element.submitForm.apply(item, [item]);
+                var customEvent;
+
+                if (!element.isValid()) {
+                    if (event) {
+                        event.preventDefault();
+                    }
+
+                    customEvent = document.createEvent('CustomEvent');
+                    customEvent.initCustomEvent('submitInvalid', true, false, {
+                        submitEvent: event
+                    });
+
+                    item.dispatchEvent(customEvent);
+
+                } else {
+                    customEvent = document.createEvent('CustomEvent');
+                    customEvent.initCustomEvent('submitValid', true, false, {
+                        submitEvent: event
+                    });
+
+                    item.dispatchEvent(customEvent);
                 }
             }
         });
