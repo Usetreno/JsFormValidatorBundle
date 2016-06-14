@@ -208,6 +208,14 @@ function FpJsAjaxRequest() {
 }
 
 function FpJsCustomizeMethods() {
+    function dispatchCustomEvent(target, name, cancelable, detailData) {
+        var event = document.createEvent('CustomEvent');
+        event.initCustomEvent(name, true, cancelable, detailData || {});
+
+        target.dispatchEvent(event);
+        return event;
+    }
+
     this.init = function (options) {
         FpJsFormValidator.each(this, function (item) {
             if (!item.jsFormValidator) {
@@ -270,6 +278,10 @@ function FpJsCustomizeMethods() {
     this.submitForm = function (event) {
         //noinspection JSCheckFunctionSignatures
         FpJsFormValidator.each(this, function (item) {
+            var validateEvent = dispatchCustomEvent(item, 'submitValidate', true, {
+                submitEvent: event
+            });
+
             var element = item.jsFormValidator;
             element.validateRecursively();
 
@@ -286,27 +298,25 @@ function FpJsCustomizeMethods() {
 
             } else {
                 element.onValidate.apply(element.domNode, [FpJsFormValidator.getAllErrors(element, {}), event]);
-                var customEvent;
+
+                if (validateEvent.defaultPrevented) {
+                    event.preventDefault();
+                    return;
+                }
 
                 if (!element.isValid()) {
                     if (event) {
                         event.preventDefault();
                     }
 
-                    customEvent = document.createEvent('CustomEvent');
-                    customEvent.initCustomEvent('submitInvalid', true, false, {
+                    dispatchCustomEvent(item, 'submitInvalid', false, {
                         submitEvent: event
                     });
-
-                    item.dispatchEvent(customEvent);
 
                 } else {
-                    customEvent = document.createEvent('CustomEvent');
-                    customEvent.initCustomEvent('submitValid', true, false, {
+                    dispatchCustomEvent(item, 'submitValid', false, {
                         submitEvent: event
                     });
-
-                    item.dispatchEvent(customEvent);
                 }
             }
         });
