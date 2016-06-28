@@ -445,8 +445,8 @@ class JsFormValidatorFactory
             // If groups is an array - return groups as is
             $result = $groups;
         } elseif ($groups instanceof \Closure) {
-            // If groups is a Closure - return the closure response
-            $result = $groups($form);
+            // If groups is a Closure - return the form class name to look for javascript
+            $result = $this->getElementId($form);
         }
 
         return $result;
