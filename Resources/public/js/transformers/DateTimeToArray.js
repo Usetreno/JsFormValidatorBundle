@@ -10,13 +10,30 @@ function SymfonyComponentFormExtensionCoreDataTransformerDateTimeToArrayTransfor
         var result = [];
 
         if (value['year'] || value['month'] || value['day']) {
+            if (
+                value['year']  === '' ||
+                value['month'] === '' ||
+                value['day']   === ''
+            ) {
+                return '';
+            }
+
             result.push(this.formatDate(this.dateFormat, [
                 value['year']  !== undefined ? value['year']  : '1970',
                 value['month'] !== undefined ? this.twoDigits(value['month']) : '01',
                 value['day']   !== undefined ? this.twoDigits(value['day']) : '01'
             ]));
         }
+
         if (value['hour'] || value['minute'] || value['second']) {
+            if (
+                value['hour']   === '' ||
+                value['minute'] === '' ||
+                value['second'] === ''
+            ) {
+                return '';
+            }
+
             result.push(this.formatDate(this.timeFormat, [
                 value['hour']   !== undefined ? this.twoDigits(value['hour'])   : '00',
                 value['minute'] !== undefined ? this.twoDigits(value['minute']) : '00',
