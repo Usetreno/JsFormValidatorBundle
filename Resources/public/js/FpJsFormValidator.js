@@ -676,9 +676,8 @@ var FpJsFormValidator = new function () {
         var value = this.getInputValue(element);
         var childName;
 
-        if (i && undefined === value) {
-            value = this.getMappedValue(element);
-
+        if (undefined !== value) {
+            // do nothing
         } else if (elementIsType(element, 'collection')) {
             value = {};
             for (childName in element.children) {
