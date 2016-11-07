@@ -32,7 +32,8 @@ function FpJsFormElement() {
     this.cascade = false;
     this.bubbling = false;
     this.disabled = false;
-    this.transformers = [];
+    this.viewTransformers = [];
+    this.modelTransformers = [];
     this.data = {};
     this.children = {};
     this.parent = null;
@@ -536,8 +537,10 @@ var FpJsFormValidator = new function () {
                         element.children[childName].parent = element;
                     }
                 }
-            } else if ('transformers' == key) {
-                element.transformers = this.parseTransformers(model[key]);
+            } else if ('viewTransformers' == key) {
+                element.viewTransformers = this.parseTransformers(model[key]);
+            } else if ('modelTransformers' == key) {
+                element.modelTransformers = this.parseTransformers(model[key]);
             } else {
                 element[key] = model[key];
             }
@@ -672,7 +675,6 @@ var FpJsFormValidator = new function () {
      * @param {FpJsFormElement} element
      */
     this.getElementValue = function (element) {
-        var i = element.transformers.length;
         var value = this.getInputValue(element);
         var childName;
 
@@ -686,14 +688,20 @@ var FpJsFormValidator = new function () {
 
         } else if (elementIsType(element, 'choice') && element.data.form) {
             if (element.multiple) {
-                value = {};
+                value = [];
                 for (childName in element.children) {
-                    value[childName] = this.getMappedValue(element.children[childName]);
+                    if (this.getMappedValue(element.children[childName])) {
+                        value.push(childName);
+                    }
                 }
+
             } else {
+                value = null;
                 for (childName in element.children) {
                     if (element.children[childName].domNode.checked) {
-                        value = this.getMappedValue(element.children[childName]);
+                        if (this.getMappedValue(element.children[childName])) {
+                            value = childName;
+                        }
                         break;
                     }
                 }
@@ -709,8 +717,14 @@ var FpJsFormValidator = new function () {
             value = this.getSpecifiedElementTypeValue(element);
         }
 
+        var i = element.viewTransformers.length;
         while (i--) {
-            value = element.transformers[i].reverseTransform(value, element);
+            value = element.viewTransformers[i].reverseTransform(value, element);
+        }
+
+        i = element.modelTransformers.length;
+        while (i--) {
+            value = element.modelTransformers[i].reverseTransform(value, element);
         }
 
         return value;

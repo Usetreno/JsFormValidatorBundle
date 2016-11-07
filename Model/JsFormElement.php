@@ -49,7 +49,12 @@ class JsFormElement extends JsModelAbstract
     /**
      * @var array
      */
-    public $transformers = array();
+    public $viewTransformers = array();
+
+    /**
+     * @var array
+     */
+    public $modelTransformers = array();
 
     /**
      * @var JsFormElement[]

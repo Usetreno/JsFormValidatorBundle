@@ -251,7 +251,10 @@ class JsFormValidatorFactory
             $conf->getOption('invalid_message'),
             $conf->getOption('invalid_message_parameters')
         );
-        $model->transformers   = $this->parseTransformers($this->getViewTransformers($form));
+
+        $model->viewTransformers  = $this->parseTransformers($this->getViewTransformers($form));
+        $model->modelTransformers = $this->parseTransformers($form->getConfig()->getModelTransformers());
+
         $model->cascade        = $conf->getOption('cascade_validation');
         $model->bubbling       = $conf->getOption('error_bubbling');
         $model->multiple       = $conf->getOption('multiple');
