@@ -675,12 +675,10 @@ var FpJsFormValidator = new function () {
      * @param {FpJsFormElement} element
      */
     this.getElementValue = function (element) {
-        var value = this.getInputValue(element);
+        var value;
         var childName;
 
-        if (undefined !== value) {
-            // do nothing
-        } else if (elementIsType(element, 'collection')) {
+        if (elementIsType(element, 'collection')) {
             value = {};
             for (childName in element.children) {
                 value[childName] = this.getMappedValue(element.children[childName]);
@@ -712,6 +710,9 @@ var FpJsFormValidator = new function () {
             for (childName in element.children) {
                 value[childName] = this.getMappedValue(element.children[childName]);
             }
+
+        } else if (elementIsType(element, 'checkbox') || elementIsType(element, 'radio')) {
+            value = element.domNode.checked ? element.domNode.value : null;
 
         } else {
             value = this.getSpecifiedElementTypeValue(element);
