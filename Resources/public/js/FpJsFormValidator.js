@@ -685,7 +685,10 @@ var FpJsFormValidator = new function () {
             }
 
         } else if (elementIsType(element, 'choice') && element.data.form) {
-            if (element.multiple) {
+            if (Object.keys(element.children).length === 0) {
+                value = this.getSpecifiedElementTypeValue(element);
+
+            } else if (element.multiple) {
                 value = [];
                 for (childName in element.children) {
                     if (this.getMappedValue(element.children[childName])) {
