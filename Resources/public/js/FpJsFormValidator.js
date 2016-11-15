@@ -467,6 +467,7 @@ var FpJsBaseConstraint = {
 
 var FpJsFormValidator = new function () {
     this.forms = {};
+    this.mappers = {};
     this.errorClass = 'form-errors';
     this.config = {};
     this.ajax = new FpJsAjaxRequest();
@@ -488,6 +489,10 @@ var FpJsFormValidator = new function () {
         } else {
             self.forms[model.id] = self.initModel(model);
         }
+    };
+
+    this.addDataMapper = function(elementType, mapper) {
+        this.mappers[elementType] = mapper;
     };
 
     this.onDocumentReady = function (callback) {
@@ -678,7 +683,12 @@ var FpJsFormValidator = new function () {
         var value;
         var childName;
 
-        if (elementIsType(element, 'collection')) {
+        var customMapperName = element.type[0];
+
+        if (this.mappers[customMapperName]) {
+            value = this.mappers[customMapperName].call(this, element);
+
+        } else if (elementIsType(element, 'collection')) {
             value = {};
             for (childName in element.children) {
                 value[childName] = this.getMappedValue(element.children[childName]);
