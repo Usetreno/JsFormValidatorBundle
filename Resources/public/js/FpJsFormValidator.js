@@ -725,7 +725,7 @@ var FpJsFormValidator = new function () {
         } else if (Object.keys(element.children).length > 0) {
             value = {};
             for (childName in element.children) {
-                value[childName] = this.getMappedValue(element.children[childName]);
+                value[childName] = this.getElementValue(element.children[childName]);
             }
 
         } else if (elementIsType(element, 'checkbox') || elementIsType(element, 'radio')) {
