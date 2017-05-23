@@ -471,7 +471,6 @@ class JsFormValidatorFactory
 
     /**
      * Gets view transformers from the given form.
-     * Merges in an extra Choice(s)ToBooleanArrayTransformer transformer in case of expanded choice.
      *
      * @param FormInterface $form
      *
@@ -480,17 +479,7 @@ class JsFormValidatorFactory
     protected function getViewTransformers(FormInterface $form)
     {
         $config = $form->getConfig();
-        $type = $config->getType()->getInnerType()->getName();
         $viewTransformers = $config->getViewTransformers();
-
-        // Choice(s)ToBooleanArrayTransformer was deprecated in SF2.7 in favor of CheckboxListMapper and RadioListMapper
-        if ($type === 'choice' && $config->getOption('expanded')) {
-            $choiceList = $config->getOption('choice_list');
-            $transformer = $config->getOption('multiple')
-                ? @new ChoicesToBooleanArrayTransformer($choiceList)
-                : @new ChoiceToBooleanArrayTransformer($choiceList, $config->getOption('placeholder'));
-            array_unshift($viewTransformers, $transformer);
-        }
 
         return $viewTransformers;
     }
